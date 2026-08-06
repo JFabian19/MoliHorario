@@ -359,6 +359,7 @@ export const App: React.FC = () => {
               selectedSections={activeSchedule ? activeSchedule.selectedSections : []}
               onRemoveSection={handleRemoveCourse}
               onClearAll={handleClearAllCourses}
+              onExportPng={handleExportPng}
             />
           </div>
 

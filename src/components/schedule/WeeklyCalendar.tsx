@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import { SelectedSection, ClassSession } from '../../types/academic';
 import { timeToMinutes } from '../../utils/timeUtils';
-import { Trash2, AlertTriangle, MapPin, User, RotateCcw, RotateCw } from 'lucide-react';
+import { Trash2, AlertTriangle, MapPin, User, Award, Download } from 'lucide-react';
 
 interface WeeklyCalendarProps {
   scheduleName: string;
   selectedSections: SelectedSection[];
   onRemoveSection: (courseCode: string) => void;
   onClearAll: () => void;
+  onExportPng?: () => void;
 }
 
 // Pastel colors for minimalist blocks matching reference image
@@ -23,10 +24,13 @@ export const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({
   scheduleName,
   selectedSections,
   onRemoveSection,
-  onClearAll
+  onClearAll,
+  onExportPng
 }) => {
-  const [mobileViewMode, setMobileViewMode] = useState<'DAY' | 'AGENDA' | 'GRID'>('DAY');
+  const [mobileViewMode, setMobileViewMode] = useState<'GRID' | 'DAY' | 'AGENDA'>('GRID');
   const [activeMobileDay, setActiveMobileDay] = useState<number>(1); // 1 = Lunes
+
+  const totalCredits = selectedSections.reduce((acc, sec) => acc + (sec.credits || 0), 0);
 
   // Check if Sunday has any classes
   const hasSunday = selectedSections.some(s => s.sessions.some(sess => sess.day === 7));
@@ -80,17 +84,33 @@ export const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({
       
       {/* Calendar Main Title & Top Right Action Controls */}
       <div className="flex flex-wrap items-center justify-between gap-3 mb-4 pb-3 border-b border-slate-100">
-        <div>
-          <h2 className="text-lg sm:text-2xl font-black text-slate-900 tracking-tight">
-            {scheduleName || 'Mi horario principal'}
-          </h2>
-          <p className="text-xs text-slate-500">{selectedSections.length} asignaturas seleccionadas</p>
+        <div className="flex items-center space-x-3">
+          <div>
+            <h2 className="text-lg sm:text-2xl font-black text-slate-900 tracking-tight">
+              {scheduleName || 'Mi horario principal'}
+            </h2>
+            <p className="text-xs text-slate-500">{selectedSections.length} asignaturas seleccionadas</p>
+          </div>
+
+          {/* Total Credits Counter Badge next to title */}
+          <div className="bg-gold-50 border border-gold-300 text-gold-950 font-extrabold px-3 py-1.5 rounded-xl text-xs flex items-center space-x-1.5 shadow-xs">
+            <Award className="w-4 h-4 text-gold-600 flex-shrink-0" />
+            <span>{totalCredits} Créditos</span>
+          </div>
         </div>
 
         {/* Action Controls & View Switcher */}
         <div className="flex items-center space-x-2">
-          {/* Mobile View Mode Switcher */}
+          {/* Mobile View Mode Switcher: Semana -> Día -> Agenda */}
           <div className="md:hidden flex bg-slate-100 p-1 rounded-lg text-xs font-bold text-slate-600">
+            <button
+              onClick={() => setMobileViewMode('GRID')}
+              className={`px-2.5 py-1 rounded-md transition-all ${
+                mobileViewMode === 'GRID' ? 'bg-[#004D34] text-white shadow-xs' : 'hover:text-slate-900'
+              }`}
+            >
+              Semana
+            </button>
             <button
               onClick={() => setMobileViewMode('DAY')}
               className={`px-2.5 py-1 rounded-md transition-all ${
@@ -107,15 +127,19 @@ export const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({
             >
               Agenda
             </button>
-            <button
-              onClick={() => setMobileViewMode('GRID')}
-              className={`px-2.5 py-1 rounded-md transition-all ${
-                mobileViewMode === 'GRID' ? 'bg-[#004D34] text-white shadow-xs' : 'hover:text-slate-900'
-              }`}
-            >
-              Semana
-            </button>
           </div>
+
+          {/* Direct Export PNG Button in Calendar Header */}
+          {onExportPng && (
+            <button
+              onClick={onExportPng}
+              className="text-xs font-extrabold bg-[#004D34] hover:bg-[#003825] text-white px-3 py-1.5 rounded-lg transition-colors flex items-center space-x-1.5 shadow-xs active:scale-95 cursor-pointer"
+              title="Exportar imagen PNG"
+            >
+              <Download className="w-3.5 h-3.5 text-emerald-300" />
+              <span>Exportar</span>
+            </button>
+          )}
 
           <button
             onClick={onClearAll}

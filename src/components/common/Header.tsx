@@ -61,12 +61,6 @@ export const Header: React.FC<HeaderProps> = ({
 
           {/* Right Header Controls */}
           <div className="flex items-center space-x-1.5 sm:space-x-3">
-            
-            {/* Total Credits Counter Badge */}
-            <div className="bg-gold-50 border border-gold-300 text-gold-950 font-extrabold px-2 py-1 sm:px-3 sm:py-1.5 rounded-lg text-[11px] sm:text-xs flex items-center space-x-1 shadow-xs">
-              <Award className="w-3.5 h-3.5 text-gold-600 flex-shrink-0" />
-              <span>{totalCredits} <span className="hidden xs:inline">Créditos</span><span className="xs:hidden">CR</span></span>
-            </div>
 
             {/* Status & Update timestamp */}
             <div className="hidden md:flex items-center space-x-2 text-xs text-slate-500">
@@ -104,13 +98,14 @@ export const Header: React.FC<HeaderProps> = ({
               <span className="sm:hidden">Horarios</span>
             </button>
 
-            {/* Exportar Button */}
+            {/* Exportar Button (Prominent & Accessible) */}
             <button
               onClick={onExportPng}
-              className="bg-[#004D34] hover:bg-[#003825] text-white font-bold px-2.5 py-1.5 sm:px-4 sm:py-2 rounded-lg text-xs sm:text-sm shadow-sm transition-all flex items-center space-x-1 active:scale-95"
+              className="bg-[#004D34] hover:bg-[#003825] text-white font-black px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl text-xs sm:text-sm shadow-md transition-all flex items-center space-x-1.5 ring-2 ring-[#004D34]/20 active:scale-95 cursor-pointer"
+              title="Descargar imagen PNG de tu horario"
             >
-              <Download className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-              <span className="hidden sm:inline">Exportar</span>
+              <Download className="w-4 h-4 text-emerald-300" />
+              <span>Exportar PNG</span>
             </button>
 
           </div>
