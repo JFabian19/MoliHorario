@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Header } from './components/common/Header';
 import { Footer } from './components/common/Footer';
+import { Leaderboard } from './components/common/Leaderboard';
 import { HelpModal } from './components/common/HelpModal';
 import { SupportModal } from './components/common/SupportModal';
 import { CourseSearch } from './components/courses/CourseSearch';
@@ -409,6 +410,9 @@ export const App: React.FC = () => {
           <span className="text-[10px] mt-0.5 font-bold">Horarios</span>
         </button>
       </nav>
+
+      {/* Leaderboard Donaciones */}
+      <Leaderboard onOpenSupportModal={() => setShowSupportModal(true)} />
 
       {/* App Footer */}
       <Footer metadata={metadata} />

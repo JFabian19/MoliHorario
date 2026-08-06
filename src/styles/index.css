@@ -34,3 +34,66 @@
 .animate-fade-in {
   animation: fadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
+
+@keyframes flameFlicker {
+  0%, 100% {
+    transform: scale(1) rotate(0deg);
+    filter: drop-shadow(0 0 8px rgba(249, 115, 22, 0.8));
+  }
+  25% {
+    transform: scale(1.15) rotate(-3deg);
+    filter: drop-shadow(0 0 14px rgba(234, 179, 8, 0.9));
+  }
+  50% {
+    transform: scale(0.95) rotate(3deg);
+    filter: drop-shadow(0 0 6px rgba(249, 115, 22, 0.7));
+  }
+  75% {
+    transform: scale(1.1) rotate(-2deg);
+    filter: drop-shadow(0 0 12px rgba(249, 115, 22, 1));
+  }
+}
+
+.animate-flame-flicker {
+  animation: flameFlicker 1.8s infinite ease-in-out;
+}
+
+@keyframes flameGlow {
+  0%, 100% {
+    text-shadow: 0 0 10px rgba(245, 158, 11, 0.6), 0 0 20px rgba(234, 88, 12, 0.4);
+  }
+  50% {
+    text-shadow: 0 0 18px rgba(251, 191, 36, 0.9), 0 0 30px rgba(249, 115, 22, 0.8), 0 0 40px rgba(234, 179, 8, 0.6);
+  }
+}
+
+.animate-flame-glow {
+  animation: flameGlow 2s infinite ease-in-out;
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.animate-shimmer {
+  animation: shimmer 3s infinite linear;
+}
+
+@keyframes spinSlow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin-slow {
+  animation: spinSlow 12s linear infinite;
+}
+
