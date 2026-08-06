@@ -25,6 +25,7 @@ export const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({
   onRemoveSection,
   onClearAll
 }) => {
+  const [mobileViewMode, setMobileViewMode] = useState<'DAY' | 'AGENDA' | 'GRID'>('DAY');
   const [activeMobileDay, setActiveMobileDay] = useState<number>(1); // 1 = Lunes
 
   // Check if Sunday has any classes
@@ -71,20 +72,51 @@ export const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({
     }
   }
 
+  const currentDayInfo = days.find(d => d.num === activeMobileDay) || days[0];
+  const dayBlocks = allBlocks.filter(b => b.session.day === activeMobileDay).sort((a, b) => a.startMin - b.startMin);
+
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 sm:p-6 flex flex-col h-full min-h-[650px] lg:min-h-[780px]">
+    <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-3 sm:p-6 flex flex-col h-full min-h-[550px] lg:min-h-[780px]">
       
       {/* Calendar Main Title & Top Right Action Controls */}
       <div className="flex flex-wrap items-center justify-between gap-3 mb-4 pb-3 border-b border-slate-100">
         <div>
-          <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
+          <h2 className="text-lg sm:text-2xl font-black text-slate-900 tracking-tight">
             {scheduleName || 'Mi horario principal'}
           </h2>
           <p className="text-xs text-slate-500">{selectedSections.length} asignaturas seleccionadas</p>
         </div>
 
-        {/* Action Controls: Undo, Redo, Limpiar */}
+        {/* Action Controls & View Switcher */}
         <div className="flex items-center space-x-2">
+          {/* Mobile View Mode Switcher */}
+          <div className="md:hidden flex bg-slate-100 p-1 rounded-lg text-xs font-bold text-slate-600">
+            <button
+              onClick={() => setMobileViewMode('DAY')}
+              className={`px-2.5 py-1 rounded-md transition-all ${
+                mobileViewMode === 'DAY' ? 'bg-[#004D34] text-white shadow-xs' : 'hover:text-slate-900'
+              }`}
+            >
+              Día
+            </button>
+            <button
+              onClick={() => setMobileViewMode('AGENDA')}
+              className={`px-2.5 py-1 rounded-md transition-all ${
+                mobileViewMode === 'AGENDA' ? 'bg-[#004D34] text-white shadow-xs' : 'hover:text-slate-900'
+              }`}
+            >
+              Agenda
+            </button>
+            <button
+              onClick={() => setMobileViewMode('GRID')}
+              className={`px-2.5 py-1 rounded-md transition-all ${
+                mobileViewMode === 'GRID' ? 'bg-[#004D34] text-white shadow-xs' : 'hover:text-slate-900'
+              }`}
+            >
+              Semana
+            </button>
+          </div>
+
           <button
             onClick={onClearAll}
             disabled={selectedSections.length === 0}
@@ -92,14 +124,14 @@ export const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({
             title="Vaciar horario"
           >
             <Trash2 className="w-3.5 h-3.5" />
-            <span>Limpiar</span>
+            <span className="hidden sm:inline">Limpiar</span>
           </button>
         </div>
       </div>
 
       {/* Conflicts Alert Banner */}
       {conflictBlockIds.size > 0 && (
-        <div className="bg-rose-50 border border-rose-200 text-rose-800 px-4 py-2.5 rounded-xl text-xs font-bold mb-4 flex items-center justify-between shadow-sm">
+        <div className="bg-rose-50 border border-rose-200 text-rose-800 px-3 py-2 sm:px-4 sm:py-2.5 rounded-xl text-xs font-bold mb-4 flex items-center justify-between shadow-sm">
           <div className="flex items-center space-x-2">
             <AlertTriangle className="w-4 h-4 text-rose-600 flex-shrink-0" />
             <span>Existe un cruce de horario entre tus asignaturas seleccionadas.</span>
@@ -107,30 +139,161 @@ export const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({
         </div>
       )}
 
-      {/* Mobile Day Selector Bar */}
-      <div className="md:hidden flex items-center justify-between bg-slate-100 p-1.5 rounded-xl mb-3">
-        {days.map(d => (
-          <button
-            key={d.num}
-            onClick={() => setActiveMobileDay(d.num)}
-            className={`flex-1 py-1.5 text-xs font-extrabold rounded-lg transition-all ${
-              activeMobileDay === d.num
-                ? 'bg-[#004D34] text-white shadow-sm'
-                : 'text-slate-600 hover:text-slate-900'
-            }`}
-          >
-            {d.short}
-          </button>
-        ))}
-      </div>
+      {/* MOBILE SPECIFIC VIEWS (md:hidden) */}
+      
+      {/* 1. MOBILE SINGLE DAY TIMELINE VIEW */}
+      {mobileViewMode === 'DAY' && (
+        <div className="md:hidden flex flex-col flex-grow space-y-3">
+          {/* Day Tabs Bar */}
+          <div className="grid grid-cols-6 sm:grid-cols-7 gap-1 bg-slate-100 p-1.5 rounded-xl">
+            {days.map(d => (
+              <button
+                key={d.num}
+                onClick={() => setActiveMobileDay(d.num)}
+                className={`py-2 text-xs font-extrabold rounded-lg transition-all text-center ${
+                  activeMobileDay === d.num
+                    ? 'bg-[#004D34] text-white shadow-sm scale-105'
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                {d.short}
+              </button>
+            ))}
+          </div>
 
-      {/* Calendar Grid Container */}
-      <div className="overflow-x-auto flex-grow relative custom-scrollbar">
-        <div className="min-w-[700px] md:min-w-full h-full flex flex-col">
+          {/* Day Title & Card List Container */}
+          <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 flex-grow flex flex-col space-y-2 overflow-y-auto max-h-[500px]">
+            <div className="flex items-center justify-between border-b border-slate-200 pb-2">
+              <span className="font-black text-slate-800 text-sm">{currentDayInfo.name}</span>
+              <span className="text-xs text-slate-500 font-bold">{dayBlocks.length} clases</span>
+            </div>
+
+            {dayBlocks.length === 0 ? (
+              <div className="py-12 text-center text-slate-400 space-y-2">
+                <p className="text-xs font-semibold">No tienes clases programadas para este día.</p>
+                <p className="text-[11px] text-slate-400">Selecciona otro día arriba o agrega más asignaturas.</p>
+              </div>
+            ) : (
+              dayBlocks.map(b => {
+                const hasConflict = conflictBlockIds.has(b.session.id);
+                return (
+                  <div
+                    key={b.session.id}
+                    className={`p-3.5 rounded-xl border shadow-xs relative transition-all ${b.style.bg} ${b.style.border} ${
+                      hasConflict ? '!border-l-rose-600 !border-rose-300 ring-2 ring-rose-400' : ''
+                    }`}
+                  >
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <div className="flex items-center space-x-2">
+                          <span className="font-extrabold text-xs tracking-tight">
+                            {b.section.courseCode} - Sec {b.section.sectionName}
+                          </span>
+                          <span className="text-[10px] font-bold uppercase opacity-80 bg-white/70 px-1.5 py-0.5 rounded">
+                            {b.session.type}
+                          </span>
+                        </div>
+                        <h4 className="font-extrabold text-sm text-slate-900 mt-1">{b.section.courseName}</h4>
+                      </div>
+
+                      <button
+                        onClick={() => onRemoveSection(b.section.courseCode)}
+                        className="p-1.5 bg-rose-600 text-white rounded-lg shadow-sm active:scale-95 transition-transform"
+                        title="Quitar curso"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+
+                    <div className="mt-2.5 pt-2 border-t border-black/5 flex flex-wrap items-center justify-between gap-2 text-xs font-semibold">
+                      <div className="flex items-center space-x-1.5 text-slate-800 font-mono font-bold bg-white/60 px-2 py-1 rounded border border-black/5">
+                        <span>⏰</span>
+                        <span>{b.session.start} - {b.session.end}</span>
+                      </div>
+
+                      {b.session.classroom && (
+                        <div className="flex items-center space-x-1 text-slate-700 text-[11px]">
+                          <MapPin className="w-3 h-3 text-slate-500" />
+                          <span>{b.session.classroom}</span>
+                        </div>
+                      )}
+
+                      {b.section.teacher && (
+                        <div className="flex items-center space-x-1 text-slate-700 text-[11px] w-full mt-0.5">
+                          <User className="w-3 h-3 text-slate-500" />
+                          <span className="truncate">{b.section.teacher.name}</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                );
+              })
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* 2. MOBILE AGENDA VIEW */}
+      {mobileViewMode === 'AGENDA' && (
+        <div className="md:hidden flex flex-col flex-grow space-y-3 overflow-y-auto max-h-[520px] pr-1">
+          {days.map(d => {
+            const blocksForDay = allBlocks.filter(b => b.session.day === d.num).sort((a, b) => a.startMin - b.startMin);
+            if (blocksForDay.length === 0) return null;
+
+            return (
+              <div key={d.num} className="bg-slate-50 border border-slate-200 rounded-xl p-3 space-y-2">
+                <div className="font-extrabold text-xs text-[#004D34] uppercase tracking-wider border-b border-slate-200 pb-1.5 flex items-center justify-between">
+                  <span>{d.name}</span>
+                  <span className="text-[10px] bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full font-bold">{blocksForDay.length} clases</span>
+                </div>
+                
+                <div className="space-y-2 pt-1">
+                  {blocksForDay.map(b => (
+                    <div key={b.session.id} className={`p-3 rounded-lg border text-xs flex items-center justify-between ${b.style.bg} ${b.style.border}`}>
+                      <div>
+                        <div className="font-bold text-slate-900">
+                          {b.section.courseCode} - {b.section.courseName} (Sec {b.section.sectionName})
+                        </div>
+                        <div className="text-[11px] font-mono text-slate-700 font-semibold mt-0.5">
+                          {b.session.start} - {b.session.end} • {b.session.type} {b.session.classroom ? `• ${b.session.classroom}` : ''}
+                        </div>
+                      </div>
+
+                      <button
+                        onClick={() => onRemoveSection(b.section.courseCode)}
+                        className="p-1 text-rose-600 hover:text-rose-800"
+                        title="Quitar curso"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            );
+          })}
+
+          {selectedSections.length === 0 && (
+            <div className="py-12 text-center text-slate-400 space-y-2">
+              <p className="text-xs font-semibold">No tienes asignaturas en tu horario.</p>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* 3. FULL DESKTOP & MOBILE GRID VIEW */}
+      <div className={`overflow-x-auto flex-grow relative custom-scrollbar ${mobileViewMode !== 'GRID' ? 'hidden md:block' : 'block'}`}>
+        <div className="min-w-[640px] md:min-w-full h-full flex flex-col">
           
-          {/* Days Header Row */}
-          <div className="grid grid-cols-7 bg-white sticky top-0 z-10 border-b border-slate-200">
-            <div className="p-2 text-center text-xs font-bold text-slate-400 border-r border-slate-100 w-16">
+          {/* Days Header Row with dynamic gridTemplateColumns */}
+          <div
+            className="bg-white sticky top-0 z-10 border-b border-slate-200"
+            style={{
+              display: 'grid',
+              gridTemplateColumns: `56px repeat(${days.length}, minmax(0, 1fr))`
+            }}
+          >
+            <div className="p-2 text-center text-xs font-bold text-slate-400 border-r border-slate-100">
               Hora
             </div>
             {days.map(d => (
@@ -147,10 +310,15 @@ export const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({
           </div>
 
           {/* Grid Rows Body with Dashed Lines */}
-          <div className="relative flex-grow grid grid-cols-7 divide-x divide-slate-100">
-            
+          <div
+            className="relative flex-grow divide-x divide-slate-100"
+            style={{
+              display: 'grid',
+              gridTemplateColumns: `56px repeat(${days.length}, minmax(0, 1fr))`
+            }}
+          >
             {/* Hour labels column */}
-            <div className="w-16 divide-y divide-slate-100 bg-white">
+            <div className="divide-y divide-slate-100 bg-white">
               {hours.map(h => (
                 <div key={h} className="h-14 text-[11px] font-mono text-slate-400 p-1 text-right pr-2">
                   {String(h).padStart(2, '0')}:00
@@ -234,3 +402,4 @@ export const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({
     </div>
   );
 };
+

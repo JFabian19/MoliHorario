@@ -16,7 +16,7 @@ import { StorageUtils } from './utils/storageUtils';
 import { ShareUtils } from './utils/shareUtils';
 import { PngExporter } from './utils/pngExporter';
 import { APP_CONFIG } from './config/appConfig';
-import { AlertCircle, CheckCircle2, BookOpen, Calendar as CalendarIcon } from 'lucide-react';
+import { AlertCircle, CheckCircle2, BookOpen, Calendar as CalendarIcon, Sparkles, Layers, ArrowRight } from 'lucide-react';
 
 export const App: React.FC = () => {
   const [courses, setCourses] = useState<AcademicCourse[]>([]);
@@ -272,13 +272,25 @@ export const App: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#f2f9f4] flex flex-col font-sans">
+    <div className="min-h-screen bg-[#f2f9f4] flex flex-col font-sans relative">
       
-      {/* Toast Notification */}
+      {/* Toast Notification with Quick Jump Button */}
       {toastMessage && (
-        <div className="fixed bottom-6 right-6 z-50 bg-slate-900 text-white px-4 py-3 rounded-2xl shadow-2xl border border-slate-700 flex items-center space-x-2 text-xs font-bold animate-fade-in">
-          <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-          <span>{toastMessage}</span>
+        <div className="fixed bottom-20 lg:bottom-6 right-4 sm:right-6 z-50 bg-slate-900 text-white px-4 py-3 rounded-2xl shadow-2xl border border-slate-700 flex items-center justify-between space-x-3 text-xs font-bold animate-fade-in max-w-sm">
+          <div className="flex items-center space-x-2 truncate">
+            <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+            <span className="truncate">{toastMessage}</span>
+          </div>
+
+          {mobileTab === 'SEARCH' && (
+            <button
+              onClick={() => setMobileTab('CALENDAR')}
+              className="bg-emerald-600 hover:bg-emerald-500 text-white px-2.5 py-1 rounded-lg text-[11px] font-extrabold flex items-center space-x-1 flex-shrink-0 shadow-xs"
+            >
+              <span>Ver Horario</span>
+              <ArrowRight className="w-3 h-3" />
+            </button>
+          )}
         </div>
       )}
 
@@ -296,37 +308,37 @@ export const App: React.FC = () => {
         onOpenSupportModal={() => setShowSupportModal(true)}
       />
 
-      {/* Mobile Tab Switcher Bar */}
-      <div className="lg:hidden max-w-[1600px] w-full mx-auto px-4 pt-4">
-        <div className="grid grid-cols-2 gap-2 bg-white p-1.5 rounded-2xl border border-slate-200 shadow-xs text-center font-extrabold text-xs">
+      {/* Top Mobile View Mode Indicator */}
+      <div className="lg:hidden max-w-[1600px] w-full mx-auto px-3 pt-3">
+        <div className="grid grid-cols-2 gap-1.5 bg-white p-1 rounded-xl border border-slate-200 shadow-xs text-center font-extrabold text-xs">
           <button
             onClick={() => setMobileTab('SEARCH')}
-            className={`py-2 rounded-xl transition-all flex items-center justify-center space-x-2 ${
+            className={`py-2 rounded-lg transition-all flex items-center justify-center space-x-1.5 ${
               mobileTab === 'SEARCH'
                 ? 'bg-[#004D34] text-white shadow-sm'
                 : 'text-slate-600 hover:text-slate-900'
             }`}
           >
             <BookOpen className="w-4 h-4" />
-            <span>Buscar Cursos</span>
+            <span>1. Buscar Cursos</span>
           </button>
 
           <button
             onClick={() => setMobileTab('CALENDAR')}
-            className={`py-2 rounded-xl transition-all flex items-center justify-center space-x-2 ${
+            className={`py-2 rounded-lg transition-all flex items-center justify-center space-x-1.5 ${
               mobileTab === 'CALENDAR'
                 ? 'bg-[#004D34] text-white shadow-sm'
                 : 'text-slate-600 hover:text-slate-900'
             }`}
           >
             <CalendarIcon className="w-4 h-4" />
-            <span>Mi Horario ({activeSchedule?.selectedSections.length || 0})</span>
+            <span>2. Mi Horario ({activeSchedule?.selectedSections.length || 0})</span>
           </button>
         </div>
       </div>
 
-      {/* Main Workspace Layout */}
-      <main className="flex-grow max-w-[1600px] w-full mx-auto px-4 sm:px-6 py-4 sm:py-6">
+      {/* Main Workspace Layout with bottom padding for mobile navigation */}
+      <main className="flex-grow max-w-[1600px] w-full mx-auto px-3 sm:px-6 py-3 sm:py-6 pb-24 lg:pb-6">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           
           {/* Left Panel: Course Search & Add */}
@@ -352,6 +364,50 @@ export const App: React.FC = () => {
 
         </div>
       </main>
+
+      {/* Fixed Mobile Bottom Navigation Bar */}
+      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200 px-2 py-1.5 flex items-center justify-around shadow-2xl">
+        <button
+          onClick={() => setMobileTab('SEARCH')}
+          className={`flex flex-col items-center justify-center py-1 px-3 rounded-xl transition-all ${
+            mobileTab === 'SEARCH' ? 'text-[#004D34] font-black scale-105' : 'text-slate-500 hover:text-slate-800'
+          }`}
+        >
+          <BookOpen className="w-5 h-5" />
+          <span className="text-[10px] mt-0.5 font-bold">Buscar</span>
+        </button>
+
+        <button
+          onClick={() => setMobileTab('CALENDAR')}
+          className={`flex flex-col items-center justify-center py-1 px-3 rounded-xl relative transition-all ${
+            mobileTab === 'CALENDAR' ? 'text-[#004D34] font-black scale-105' : 'text-slate-500 hover:text-slate-800'
+          }`}
+        >
+          <CalendarIcon className="w-5 h-5" />
+          <span className="text-[10px] mt-0.5 font-bold">Mi Horario</span>
+          {activeSchedule && activeSchedule.selectedSections.length > 0 && (
+            <span className="absolute -top-1 right-2 bg-emerald-600 text-white text-[9px] font-black w-4 h-4 rounded-full flex items-center justify-center border-2 border-white">
+              {activeSchedule.selectedSections.length}
+            </span>
+          )}
+        </button>
+
+        <button
+          onClick={() => setShowGeneratorModal(true)}
+          className="flex flex-col items-center justify-center py-1 px-3 rounded-xl text-amber-600 hover:text-amber-700 transition-all"
+        >
+          <Sparkles className="w-5 h-5" />
+          <span className="text-[10px] mt-0.5 font-extrabold">Generar</span>
+        </button>
+
+        <button
+          onClick={() => setShowScheduleManager(true)}
+          className="flex flex-col items-center justify-center py-1 px-3 rounded-xl text-slate-600 hover:text-slate-900 transition-all"
+        >
+          <Layers className="w-5 h-5" />
+          <span className="text-[10px] mt-0.5 font-bold">Horarios</span>
+        </button>
+      </nav>
 
       {/* App Footer */}
       <Footer metadata={metadata} />

@@ -39,9 +39,9 @@ export const Header: React.FC<HeaderProps> = ({
         <div className="flex items-center justify-between h-16">
           
           {/* Logo & Subtitle */}
-          <div className="flex items-center space-x-3">
+          <div className="flex items-center space-x-2 sm:space-x-3">
             <div className="flex items-center space-x-2">
-              <span className="font-extrabold text-xl sm:text-2xl tracking-tighter text-[#004D34] italic font-sans">
+              <span className="font-extrabold text-lg sm:text-2xl tracking-tighter text-[#004D34] italic font-sans">
                 MOLIHORARIO
               </span>
             </div>
@@ -60,12 +60,12 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
 
           {/* Right Header Controls */}
-          <div className="flex items-center space-x-2 sm:space-x-3">
+          <div className="flex items-center space-x-1.5 sm:space-x-3">
             
             {/* Total Credits Counter Badge */}
-            <div className="bg-gold-50 border border-gold-300 text-gold-950 font-extrabold px-3 py-1.5 rounded-lg text-xs flex items-center space-x-1.5 shadow-xs">
-              <Award className="w-3.5 h-3.5 text-gold-600" />
-              <span>{totalCredits} Créditos</span>
+            <div className="bg-gold-50 border border-gold-300 text-gold-950 font-extrabold px-2 py-1 sm:px-3 sm:py-1.5 rounded-lg text-[11px] sm:text-xs flex items-center space-x-1 shadow-xs">
+              <Award className="w-3.5 h-3.5 text-gold-600 flex-shrink-0" />
+              <span>{totalCredits} <span className="hidden xs:inline">Créditos</span><span className="xs:hidden">CR</span></span>
             </div>
 
             {/* Status & Update timestamp */}
@@ -79,7 +79,7 @@ export const Header: React.FC<HeaderProps> = ({
             {/* Notification / Help bell */}
             <button
               onClick={onOpenHelp}
-              className="text-slate-500 hover:text-slate-900 p-2 rounded-lg hover:bg-slate-100 transition-colors"
+              className="text-slate-500 hover:text-slate-900 p-1.5 sm:p-2 rounded-lg hover:bg-slate-100 transition-colors"
               title="Ayuda"
             >
               <Bell className="w-4 h-4" />
@@ -88,7 +88,7 @@ export const Header: React.FC<HeaderProps> = ({
             {/* Support Heart */}
             <button
               onClick={onOpenSupportModal}
-              className="text-pink-600 hover:bg-pink-50 p-2 rounded-lg transition-colors border border-pink-200"
+              className="text-pink-600 hover:bg-pink-50 p-1.5 sm:p-2 rounded-lg transition-colors border border-pink-200 hidden sm:block"
               title="Apoyar (Yape)"
             >
               <Heart className="w-4 h-4 fill-pink-500" />
@@ -97,20 +97,20 @@ export const Header: React.FC<HeaderProps> = ({
             {/* Mis Horarios */}
             <button
               onClick={onOpenScheduleManager}
-              className="bg-emerald-50 hover:bg-emerald-100/80 text-[#004D34] font-bold px-3 py-1.5 rounded-lg text-xs sm:text-sm border border-emerald-200 transition-colors flex items-center space-x-1.5"
+              className="bg-emerald-50 hover:bg-emerald-100/80 text-[#004D34] font-bold px-2.5 py-1.5 rounded-lg text-xs sm:text-sm border border-emerald-200 transition-colors flex items-center space-x-1.5"
             >
               <Save className="w-3.5 h-3.5" />
               <span className="hidden sm:inline">{activeSchedule ? activeSchedule.name : 'Mis Horarios'}</span>
               <span className="sm:hidden">Horarios</span>
             </button>
 
-            {/* Exportar Button (Primary dark forest green) */}
+            {/* Exportar Button */}
             <button
               onClick={onExportPng}
-              className="bg-[#004D34] hover:bg-[#003825] text-white font-bold px-4 py-2 rounded-lg text-xs sm:text-sm shadow-sm transition-all flex items-center space-x-1.5 active:scale-95"
+              className="bg-[#004D34] hover:bg-[#003825] text-white font-bold px-2.5 py-1.5 sm:px-4 sm:py-2 rounded-lg text-xs sm:text-sm shadow-sm transition-all flex items-center space-x-1 active:scale-95"
             >
-              <Download className="w-4 h-4" />
-              <span>Exportar</span>
+              <Download className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+              <span className="hidden sm:inline">Exportar</span>
             </button>
 
           </div>

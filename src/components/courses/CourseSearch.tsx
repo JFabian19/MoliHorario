@@ -136,14 +136,14 @@ export const CourseSearch: React.FC<CourseSearchProps> = ({
           )}
         </div>
 
-        {/* Active Filter Chips */}
-        <div className="flex flex-wrap items-center gap-1.5 pt-1">
+        {/* Active Filter Chips & Department Dropdown */}
+        <div className="flex flex-wrap items-center gap-2 pt-1">
           <select
             value={selectedDept}
             onChange={(e) => setSelectedDept(e.target.value)}
-            className="text-xs bg-emerald-800 text-white font-bold rounded-lg px-2.5 py-1 focus:outline-none max-w-[200px] truncate"
+            className="w-full sm:w-auto text-xs bg-[#004D34] text-white font-extrabold rounded-xl px-3 py-2 focus:outline-none shadow-xs truncate cursor-pointer"
           >
-            <option value="">Escoge Departamento...</option>
+            <option value="" className="bg-white text-slate-800 font-bold">Escoge Departamento / Facultad...</option>
             {departments.map(d => (
               <option key={d} value={d} className="bg-white text-slate-800 font-normal">{d}</option>
             ))}
@@ -152,10 +152,10 @@ export const CourseSearch: React.FC<CourseSearchProps> = ({
           {selectedDept && (
             <button
               onClick={() => setSelectedDept('')}
-              className="text-[11px] bg-slate-200 text-slate-700 px-2 py-1 rounded-lg flex items-center gap-1 font-medium"
+              className="text-xs bg-rose-100 text-rose-800 px-2.5 py-1.5 rounded-lg flex items-center gap-1 font-bold border border-rose-200"
             >
               <span>{selectedDept}</span>
-              <X className="w-3 h-3" />
+              <X className="w-3.5 h-3.5 text-rose-600" />
             </button>
           )}
         </div>
