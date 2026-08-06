@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { X, Heart, Copy, Check } from 'lucide-react';
 import { APP_CONFIG } from '../../config/appConfig';
+import { trackEvent } from '../../utils/analyticsUtils';
 
 interface SupportModalProps {
   isOpen: boolean;
@@ -17,6 +18,11 @@ export const SupportModal: React.FC<SupportModalProps> = ({ isOpen, onClose }) =
   const handleCopy = () => {
     navigator.clipboard.writeText(phoneNumber);
     setCopied(true);
+    trackEvent('copy_yape_number', {
+      event_category: 'donation',
+      event_label: 'Yape Number Copied',
+      method: 'button_click'
+    });
     setTimeout(() => setCopied(false), 2500);
   };
 
