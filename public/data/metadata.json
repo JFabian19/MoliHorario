@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "period": "2026-II",
+  "sourceUrl": "https://maipi.lamolina.edu.pe/publico/boletin",
+  "generatedAt": "2026-08-05T19:44:10.873Z",
+  "departmentCount": 30,
+  "courseCount": 661,
+  "sectionCount": 1510,
+  "sessionCount": 3184,
+  "teacherCount": 551,
+  "extractionDurationMs": 61,
+  "checksum": "1741970a6f7e257674f296eea2ef61c81d66953e936258422d4aeb5429496064",
+  "warnings": 0,
+  "validationState": "VALID"
+}
