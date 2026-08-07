@@ -18,11 +18,22 @@ export const SupportModal: React.FC<SupportModalProps> = ({ isOpen, onClose }) =
   const handleCopy = () => {
     navigator.clipboard.writeText(phoneNumber);
     setCopied(true);
+
+    // Track custom event for GA4
     trackEvent('copy_yape_number', {
       event_category: 'donation',
       event_label: 'Yape Number Copied',
-      method: 'button_click'
+      method: 'button_click',
+      phone_number: phoneNumber,
+      value: 1
     });
+
+    // Track standard GA4 content selection event as fallback
+    trackEvent('select_content', {
+      content_type: 'donation_yape',
+      item_id: phoneNumber
+    });
+
     setTimeout(() => setCopied(false), 2500);
   };
 

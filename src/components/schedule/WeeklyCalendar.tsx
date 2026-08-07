@@ -362,52 +362,92 @@ export const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({
                   .filter(b => b.session.day === d.num)
                   .map(b => {
                     const topPx = ((b.startMin - startHour * 60) / 60) * 56; // 56px per hour
-                    const heightPx = ((b.endMin - b.startMin) / 60) * 56;
+                    const durationMin = b.endMin - b.startMin;
+                    const heightPx = (durationMin / 60) * 56;
                     const hasConflict = conflictBlockIds.has(b.session.id);
+                    const is1HourBlock = durationMin <= 65; // 1 hour block (56px-60px height)
+
+                    const typeBadgeText = b.session.type === 'TEORIA' ? 'TEO' : b.session.type === 'PRACTICA' ? 'PRA' : b.session.type.slice(0, 3);
+                    const typeBadgeClass = b.session.type === 'TEORIA'
+                      ? 'bg-blue-600 text-white font-extrabold'
+                      : b.session.type === 'PRACTICA'
+                      ? 'bg-emerald-600 text-white font-extrabold'
+                      : 'bg-purple-600 text-white font-extrabold';
+
+                    const tooltipText = `${b.section.courseCode} - ${b.section.courseName}\nSección: ${b.section.sectionName} (${b.session.type})\nHorario: ${b.session.start} - ${b.session.end}\nDocente: ${b.section.teacher?.name || 'N.N.'}\nAula: ${b.session.classroom || 'Sin aula'}`;
 
                     return (
                       <div
                         key={b.session.id}
+                        title={tooltipText}
                         style={{
                           top: `${topPx}px`,
                           height: `${heightPx}px`,
                         }}
-                        className={`absolute left-0.5 right-0.5 rounded-lg p-2 shadow-xs overflow-hidden transition-all group z-10 ${b.style.bg} ${b.style.border} ${
+                        className={`absolute left-0.5 right-0.5 rounded-lg shadow-2xs overflow-hidden transition-all group z-10 ${b.style.bg} ${b.style.border} ${
                           hasConflict ? '!border-l-rose-600 !border-rose-300 ring-2 ring-rose-400' : ''
-                        }`}
+                        } ${is1HourBlock ? 'p-1.5 flex flex-col justify-between' : 'p-2'}`}
                       >
-                        <div className="flex items-start justify-between">
-                          <span className="font-extrabold text-xs tracking-tight truncate">
+                        {/* Top Header Row: Course Code & Section + Type Badge */}
+                        <div className="flex items-center justify-between gap-1">
+                          <span className={`font-extrabold tracking-tight truncate ${is1HourBlock ? 'text-[10px] leading-none' : 'text-xs'}`}>
                             {b.section.courseCode} - Sec {b.section.sectionName}
                           </span>
 
-                          <span className="text-[10px] font-bold uppercase opacity-80 bg-white/60 px-1 rounded">
-                            {b.session.type.slice(0, 1)}
+                          <span className={`text-[9px] uppercase px-1.5 py-0.2 rounded shadow-2xs shrink-0 ${typeBadgeClass}`}>
+                            {typeBadgeText}
                           </span>
                         </div>
 
-                        <div className="text-xs font-extrabold truncate mt-0.5">
+                        {/* Course Name */}
+                        <div className={`font-black text-slate-900 truncate ${is1HourBlock ? 'text-[10.5px] leading-tight my-0.5' : 'text-xs mt-0.5'}`}>
                           {b.section.courseName}
                         </div>
 
-                        {b.section.teacher && (
-                          <div className="text-[11px] opacity-90 truncate mt-1 flex items-center gap-1 font-medium">
-                            <User className="w-3 h-3 opacity-70" />
-                            <span>{b.section.teacher.name}</span>
+                        {/* Details (Teacher & Classroom) */}
+                        {is1HourBlock ? (
+                          /* Compact 1-line summary for 1-hour blocks */
+                          <div className="text-[9.5px] font-semibold text-slate-700 truncate opacity-90 flex items-center gap-1.5 leading-none">
+                            {b.session.classroom && (
+                              <span className="flex items-center gap-0.5 text-slate-800">
+                                <MapPin className="w-2.5 h-2.5 text-slate-600 shrink-0" />
+                                <span className="truncate">{b.session.classroom}</span>
+                              </span>
+                            )}
+                            {b.section.teacher && (
+                              <span className="flex items-center gap-0.5 truncate text-slate-700">
+                                {b.session.classroom && <span>•</span>}
+                                <User className="w-2.5 h-2.5 text-slate-500 shrink-0" />
+                                <span className="truncate">{b.section.teacher.name}</span>
+                              </span>
+                            )}
                           </div>
-                        )}
+                        ) : (
+                          /* Standard layout for >1 hour blocks */
+                          <>
+                            {b.section.teacher && (
+                              <div className="text-[11px] opacity-90 truncate mt-1 flex items-center gap-1 font-medium">
+                                <User className="w-3 h-3 opacity-70 shrink-0" />
+                                <span className="truncate">{b.section.teacher.name}</span>
+                              </div>
+                            )}
 
-                        {b.session.classroom && (
-                          <div className="text-[10px] opacity-80 truncate mt-0.5 flex items-center gap-1">
-                            <MapPin className="w-2.5 h-2.5 opacity-70" />
-                            <span>{b.session.classroom}</span>
-                          </div>
+                            {b.session.classroom && (
+                              <div className="text-[10px] opacity-80 truncate mt-0.5 flex items-center gap-1">
+                                <MapPin className="w-2.5 h-2.5 opacity-70 shrink-0" />
+                                <span>{b.session.classroom}</span>
+                              </div>
+                            )}
+                          </>
                         )}
 
                         {/* Quick Delete Hover Button */}
                         <button
-                          onClick={() => onRemoveSection(b.section.courseCode)}
-                          className="absolute top-1 right-1 p-1 bg-rose-600 text-white rounded opacity-0 group-hover:opacity-100 transition-opacity shadow"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onRemoveSection(b.section.courseCode);
+                          }}
+                          className="absolute top-1 right-1 p-1 bg-rose-600 text-white rounded opacity-0 group-hover:opacity-100 transition-opacity shadow z-20"
                           title="Quitar curso"
                         >
                           <Trash2 className="w-3 h-3" />

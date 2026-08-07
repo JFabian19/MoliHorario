@@ -1,5 +1,6 @@
 import React from 'react';
 import { Trophy, Flame, Star, Sparkles, Heart, Crown, Award, ShieldCheck } from 'lucide-react';
+import { trackEvent } from '../../utils/analyticsUtils';
 
 interface LeaderboardProps {
   onOpenSupportModal?: () => void;
@@ -34,7 +35,7 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ onOpenSupportModal }) 
         {/* Podium / Cards Grid */}
         <div className="relative z-10 grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto items-end">
           
-          {/* Rank 2 - Carolina */}
+          {/* Rank 2 - Hannah San */}
           <div className="order-2 md:order-1 bg-slate-800/80 backdrop-blur-md rounded-2xl p-6 border border-slate-700/80 hover:border-slate-500/50 transition-all transform hover:-translate-y-1 shadow-lg text-center relative group overflow-hidden">
             <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-slate-400 to-slate-200" />
             
@@ -48,7 +49,7 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ onOpenSupportModal }) 
             </div>
 
             <h3 className="text-lg font-bold text-slate-100 group-hover:text-white transition-colors">
-              Carolina
+              Hannah San
             </h3>
             
             <p className="text-slate-400 text-xs mt-1 font-medium">
@@ -116,7 +117,7 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ onOpenSupportModal }) 
             </div>
           </div>
 
-          {/* Rank 3 - Julieta */}
+          {/* Rank 3 - Carolina Suy */}
           <div className="order-3 bg-slate-800/80 backdrop-blur-md rounded-2xl p-6 border border-slate-700/80 hover:border-slate-500/50 transition-all transform hover:-translate-y-1 shadow-lg text-center relative group overflow-hidden">
             <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-700 to-amber-600" />
             
@@ -130,7 +131,7 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ onOpenSupportModal }) 
             </div>
 
             <h3 className="text-lg font-bold text-slate-100 group-hover:text-white transition-colors">
-              Julieta
+              Carolina Suy
             </h3>
 
             <p className="text-slate-400 text-xs mt-1 font-medium">
@@ -138,6 +139,30 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ onOpenSupportModal }) 
             </p>
           </div>
 
+        </div>
+
+        {/* Additional Donators List Banner */}
+        <div className="relative z-10 mt-8 max-w-4xl mx-auto bg-slate-800/50 backdrop-blur-md border border-slate-700/60 rounded-2xl p-4 sm:p-5">
+          <div className="flex items-center justify-center space-x-2 text-amber-400 font-extrabold text-xs uppercase tracking-widest mb-3">
+            <Heart className="w-4 h-4 text-pink-400 fill-pink-500/30 animate-pulse" />
+            <span>Donadores Generosos de la Comunidad</span>
+            <Heart className="w-4 h-4 text-pink-400 fill-pink-500/30 animate-pulse" />
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-center">
+            <div className="bg-slate-900/60 border border-slate-700/50 rounded-xl p-3 flex items-center justify-center space-x-2 hover:border-amber-500/40 transition-colors">
+              <ShieldCheck className="w-4 h-4 text-emerald-400" />
+              <span className="font-bold text-slate-200 text-sm">Julieta Cal</span>
+            </div>
+            <div className="bg-slate-900/60 border border-slate-700/50 rounded-xl p-3 flex items-center justify-center space-x-2 hover:border-amber-500/40 transition-colors">
+              <ShieldCheck className="w-4 h-4 text-emerald-400" />
+              <span className="font-bold text-slate-200 text-sm">Kathia Gar</span>
+            </div>
+            <div className="bg-slate-900/60 border border-slate-700/50 rounded-xl p-3 flex items-center justify-center space-x-2 hover:border-amber-500/40 transition-colors">
+              <ShieldCheck className="w-4 h-4 text-emerald-400" />
+              <span className="font-bold text-slate-200 text-sm">Mathias Cha</span>
+            </div>
+          </div>
         </div>
 
         {/* Support CTA Footer */}
@@ -154,7 +179,10 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ onOpenSupportModal }) 
             </div>
 
             <button
-              onClick={onOpenSupportModal}
+              onClick={() => {
+                trackEvent('open_support_modal', { source: 'leaderboard' });
+                if (onOpenSupportModal) onOpenSupportModal();
+              }}
               className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-extrabold px-5 py-2.5 rounded-xl text-xs sm:text-sm transition-all shadow-lg hover:shadow-purple-500/20 active:scale-95 flex items-center space-x-2 shrink-0 border border-purple-400/30"
             >
               <Heart className="w-4 h-4 fill-white" />

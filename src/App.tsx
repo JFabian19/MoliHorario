@@ -12,6 +12,7 @@ import { ScheduleManager } from './components/schedule/ScheduleManager';
 import { GeneratorModal } from './components/generator/GeneratorModal';
 import { ComparatorModal } from './components/generator/ComparatorModal';
 import { ProfessorReviewsModal } from './components/reviews/ProfessorReviewsModal';
+import { ExportConfigModal } from './components/schedule/ExportConfigModal';
 
 import { AcademicCourse, MetadataJsonDataset, SavedSchedule, SelectedSection, ScheduleAlternative } from './types/academic';
 import { StorageUtils } from './utils/storageUtils';
@@ -43,6 +44,7 @@ export const App: React.FC = () => {
   const [showReviewsModal, setShowReviewsModal] = useState<boolean>(false);
   const [reviewTarget, setReviewTarget] = useState<{ key: string; name: string } | null>(null);
   const [showSupportModal, setShowSupportModal] = useState<boolean>(false);
+  const [showExportConfigModal, setShowExportConfigModal] = useState<boolean>(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   // Active schedule object
@@ -168,26 +170,13 @@ export const App: React.FC = () => {
     }
   };
 
-  // PNG Export Handler
-  const handleExportPng = async () => {
+  // PNG Export Handler - Opens Export Customization Modal
+  const handleExportPng = () => {
     if (!activeSchedule || activeSchedule.selectedSections.length === 0) {
       alert('Agrega al menos una sección a tu horario antes de exportar.');
       return;
     }
-
-    const success = await PngExporter.exportToPng(
-      activeSchedule,
-      metadata?.generatedAt ? new Date(metadata.generatedAt).toLocaleDateString() : 'Agosto 2026'
-    );
-
-    if (success) {
-      const hideUntil = localStorage.getItem(APP_CONFIG.dontShowSupportModalKey);
-      if (!hideUntil || Date.now() > Number(hideUntil)) {
-        setTimeout(() => setShowSupportModal(true), 600);
-      }
-    } else {
-      alert('Error al generar la imagen del horario.');
-    }
+    setShowExportConfigModal(true);
   };
 
   // Share Link Handler
@@ -497,6 +486,21 @@ export const App: React.FC = () => {
           professorKey={reviewTarget.key}
           professorName={reviewTarget.name}
           onClose={() => setShowReviewsModal(false)}
+        />
+      )}
+
+      {/* Export Customization Modal */}
+      {showExportConfigModal && (
+        <ExportConfigModal
+          schedule={activeSchedule}
+          lastUpdateDateStr={metadata?.generatedAt ? new Date(metadata.generatedAt).toLocaleDateString() : 'Agosto 2026'}
+          onClose={() => {
+            setShowExportConfigModal(false);
+            const hideUntil = localStorage.getItem(APP_CONFIG.dontShowSupportModalKey);
+            if (!hideUntil || Date.now() > Number(hideUntil)) {
+              setTimeout(() => setShowSupportModal(true), 600);
+            }
+          }}
         />
       )}
 
